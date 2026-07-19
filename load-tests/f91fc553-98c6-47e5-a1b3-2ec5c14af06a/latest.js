@@ -2,43 +2,46 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 export default function () {
-    // GET request to fetch resources
-    let res1 = http.get('http://sample_app:8002/api/v1/resources', { tags: { endpoint: '/api/v1/resources' } });
-    check(res1, { 'status is 200': (r) => r.status === 200 });
+    const baseUrl = 'http://sample_app:8002';
+
+    // GET request - List items
+    let res = http.get(`${baseUrl}/api/items`, { tags: { endpoint: '/api/items' } });
+    check(res, { 'status is 200': (r) => r.status === 200 });
     sleep(1);
 
-    // GET request to fetch a specific resource
-    let res2 = http.get('http://sample_app:8002/api/v1/resources/1', { tags: { endpoint: '/api/v1/resources/1' } });
-    check(res2, { 'status is 200': (r) => r.status === 200 });
+    // GET request - Get specific item
+    res = http.get(`${baseUrl}/api/items/1`, { tags: { endpoint: '/api/items/1' } });
+    check(res, { 'status is 200': (r) => r.status === 200 });
     sleep(1);
 
-    // POST request to create a new resource
-    let payload1 = JSON.stringify({
-        name: 'New Resource',
-        description: 'Description of new resource',
+    // POST request - Create item
+    const payload = JSON.stringify({
+        name: 'New Item',
+        description: 'Description of the new item',
+        price: 10.99
     });
-    let params1 = { headers: { 'Content-Type': 'application/json' } };
-    let res3 = http.post('http://sample_app:8002/api/v1/resources', payload1, params1);
-    check(res3, { 'status is 201': (r) => r.status === 201 });
-    sleep(1);
-
-    // GET request to fetch all users
-    let res4 = http.get('http://sample_app:8002/api/v1/users', { tags: { endpoint: '/api/v1/users' } });
-    check(res4, { 'status is 200': (r) => r.status === 200 });
-    sleep(1);
-
-    // GET request to fetch a specific user
-    let res5 = http.get('http://sample_app:8002/api/v1/users/1', { tags: { endpoint: '/api/v1/users/1' } });
-    check(res5, { 'status is 200': (r) => r.status === 200 });
-    sleep(1);
-
-    // POST request to create a new user
-    let payload2 = JSON.stringify({
-        username: 'newuser',
-        email: 'newuser@example.com',
+    res = http.post(`${baseUrl}/api/items`, payload, {
+        headers: { 'Content-Type': 'application/json' },
+        tags: { endpoint: '/api/items' }
     });
-    let params2 = { headers: { 'Content-Type': 'application/json' } };
-    let res6 = http.post('http://sample_app:8002/api/v1/users', payload2, params2);
-    check(res6, { 'status is 201': (r) => r.status === 201 });
+    check(res, { 'status is 201': (r) => r.status === 201 });
+    sleep(1);
+
+    // GET request - Search items
+    res = http.get(`${baseUrl}/api/items/search?q=example`, { tags: { endpoint: '/api/items/search' } });
+    check(res, { 'status is 200': (r) => r.status === 200 });
+    sleep(1);
+
+    // POST request - Update item
+    const updatePayload = JSON.stringify({
+        name: 'Updated Item',
+        description: 'Updated description',
+        price: 12.99
+    });
+    res = http.post(`${baseUrl}/api/items/1`, updatePayload, {
+        headers: { 'Content-Type': 'application/json' },
+        tags: { endpoint: '/api/items/1' }
+    });
+    check(res, { 'status is 200': (r) => r.status === 200 });
     sleep(1);
 }
