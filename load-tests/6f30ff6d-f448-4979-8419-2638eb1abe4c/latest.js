@@ -2,32 +2,37 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 export default function () {
-    let res;
+    const baseUrl = 'http://sample_app:8002';
 
-    res = http.get('http://sample_app:8002/api/v1/users', { tags: { endpoint: '/api/v1/users' } });
+    // GET request for "/api/v1/items"
+    let res = http.get(`${baseUrl}/api/v1/items`);
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    res = http.get('http://sample_app:8002/api/v1/products', { tags: { endpoint: '/api/v1/products' } });
+    // GET request for "/api/v1/users"
+    res = http.get(`${baseUrl}/api/v1/users`);
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    res = http.post('http://sample_app:8002/api/v1/orders', JSON.stringify({
-        userId: 1,
-        productIds: [2, 3],
-        orderDate: '2023-10-01'
-    }), {
-        headers: { 'Content-Type': 'application/json' },
-        tags: { endpoint: '/api/v1/orders' }
-    });
+    // POST request for "/api/v1/items"
+    let itemPayload = JSON.stringify({ name: 'Sample Item', price: 10.99 });
+    res = http.post(`${baseUrl}/api/v1/items`, itemPayload, { headers: { 'Content-Type': 'application/json' } });
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    res = http.get('http://sample_app:8002/api/v1/orders/1', { tags: { endpoint: '/api/v1/orders/1' } });
+    // POST request for "/api/v1/users"
+    let userPayload = JSON.stringify({ username: 'testuser', email: 'testuser@example.com' });
+    res = http.post(`${baseUrl}/api/v1/users`, userPayload, { headers: { 'Content-Type': 'application/json' } });
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    res = http.get('http://sample_app:8002/api/v1/categories', { tags: { endpoint: '/api/v1/categories' } });
+    // GET request for "/api/v1/items/{id}"
+    res = http.get(`${baseUrl}/api/v1/items/1`);
+    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    sleep(1);
+
+    // GET request for "/api/v1/users/{id}"
+    res = http.get(`${baseUrl}/api/v1/users/1`);
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 }
