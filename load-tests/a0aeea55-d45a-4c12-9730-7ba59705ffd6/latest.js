@@ -4,30 +4,37 @@ import { check, sleep } from 'k6';
 export default function () {
     let res;
 
-    // GET endpoint 1
     res = http.get('http://sample_app:8002/api/v1/users', { tags: { endpoint: '/api/v1/users' } });
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    // GET endpoint 2
-    res = http.get('http://sample_app:8002/api/v1/posts', { tags: { endpoint: '/api/v1/posts' } });
+    res = http.get('http://sample_app:8002/api/v1/products', { tags: { endpoint: '/api/v1/products' } });
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    // POST endpoint 1
-    const postData1 = JSON.stringify({ title: 'Sample Post', content: 'This is a content of the sample post.' });
-    res = http.post('http://sample_app:8002/api/v1/posts', postData1, { headers: { 'Content-Type': 'application/json' }, tags: { endpoint: '/api/v1/posts' } });
+    res = http.post('http://sample_app:8002/api/v1/orders', JSON.stringify({
+        userId: 1,
+        productId: 2,
+        quantity: 3
+    }), { 
+        headers: { 'Content-Type': 'application/json' },
+        tags: { endpoint: '/api/v1/orders' } 
+    });
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    // POST endpoint 2
-    const postData2 = JSON.stringify({ username: 'testuser', password: 'securepassword' });
-    res = http.post('http://sample_app:8002/api/v1/login', postData2, { headers: { 'Content-Type': 'application/json' }, tags: { endpoint: '/api/v1/login' } });
+    res = http.get('http://sample_app:8002/api/v1/categories', { tags: { endpoint: '/api/v1/categories' } });
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    // GET endpoint 3
-    res = http.get('http://sample_app:8002/api/v1/comments', { tags: { endpoint: '/api/v1/comments' } });
+    res = http.post('http://sample_app:8002/api/v1/reviews', JSON.stringify({
+        productId: 2,
+        rating: 5,
+        comment: 'Great product!'
+    }), {
+        headers: { 'Content-Type': 'application/json' },
+        tags: { endpoint: '/api/v1/reviews' } 
+    });
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 }
