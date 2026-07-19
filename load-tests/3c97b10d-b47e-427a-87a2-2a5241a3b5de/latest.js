@@ -4,34 +4,25 @@ import { check, sleep } from 'k6';
 export default function () {
     let res;
 
-    // GET request to fetch resource list
-    res = http.get('http://sample_app:8002/api/resources', { tags: { endpoint: '/api/resources' } });
+    res = http.get('http://sample_app:8002/api/v1/resource1', { tags: { endpoint: '/api/v1/resource1' } });
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    // GET request to fetch a specific resource
-    res = http.get('http://sample_app:8002/api/resources/1', { tags: { endpoint: '/api/resources/1' } });
+    res = http.get('http://sample_app:8002/api/v1/resource2', { tags: { endpoint: '/api/v1/resource2' } });
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    // POST request to create a new resource
-    res = http.post('http://sample_app:8002/api/resources', JSON.stringify({
-        name: 'New Resource',
-        description: 'Description of the new resource',
-    }), { headers: { 'Content-Type': 'application/json' }, tags: { endpoint: '/api/resources' } });
+    const payload1 = JSON.stringify({ key1: 'value1', key2: 'value2' });
+    res = http.post('http://sample_app:8002/api/v1/resource3', payload1, { tags: { endpoint: '/api/v1/resource3' },.headers: { 'Content-Type': 'application/json' } });
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    // GET request to fetch user details
-    res = http.get('http://sample_app:8002/api/users/1', { tags: { endpoint: '/api/users/1' } });
+    const payload2 = JSON.stringify({ name: 'example', age: 30 });
+    res = http.post('http://sample_app:8002/api/v1/resource4', payload2, { tags: { endpoint: '/api/v1/resource4' }, headers: { 'Content-Type': 'application/json' } });
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    // POST request to update user details
-    res = http.post('http://sample_app:8002/api/users/1', JSON.stringify({
-        name: 'Updated User',
-        email: 'updated@example.com',
-    }), { headers: { 'Content-Type': 'application/json' }, tags: { endpoint: '/api/users/1' } });
+    res = http.get('http://sample_app:8002/api/v1/resource5', { tags: { endpoint: '/api/v1/resource5' } });
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 }
