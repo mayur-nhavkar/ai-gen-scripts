@@ -4,39 +4,30 @@ import { check, sleep } from 'k6';
 export default function () {
     let res;
 
-    // GET request for /api/users
-    res = http.get('http://sample_app:8002/api/users', { tags: { endpoint: '/api/users' } });
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    // Sample GET request
+    res = http.get('http://sample_app:8002/api/v1/users', { tags: { endpoint: '/api/v1/users' } });
+    check(res, { 'status is 200': (r) => r.status === 200 });
     sleep(1);
 
-    // GET request for /api/users/{id}
-    res = http.get('http://sample_app:8002/api/users/1', { tags: { endpoint: '/api/users/{id}' } });
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    // Sample GET request
+    res = http.get('http://sample_app:8002/api/v1/products', { tags: { endpoint: '/api/v1/products' } });
+    check(res, { 'status is 200': (r) => r.status === 200 });
     sleep(1);
 
-    // POST request for /api/users
-    res = http.post('http://sample_app:8002/api/users', 
-        JSON.stringify({ name: 'John Doe', email: 'john.doe@example.com' }), 
-        { headers: { 'Content-Type': 'application/json' }, tags: { endpoint: '/api/users' } }
-    );
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    // Sample POST request
+    const userPayload = JSON.stringify({ name: 'John Doe', email: 'john@example.com' });
+    res = http.post('http://sample_app:8002/api/v1/users', userPayload, { headers: { 'Content-Type': 'application/json' }, tags: { endpoint: '/api/v1/users' } });
+    check(res, { 'status is 201': (r) => r.status === 201 });
     sleep(1);
 
-    // GET request for /api/posts
-    res = http.get('http://sample_app:8002/api/posts', { tags: { endpoint: '/api/posts' } });
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    // Sample GET request
+    res = http.get('http://sample_app:8002/api/v1/orders', { tags: { endpoint: '/api/v1/orders' } });
+    check(res, { 'status is 200': (r) => r.status === 200 });
     sleep(1);
 
-    // GET request for /api/posts/{id}
-    res = http.get('http://sample_app:8002/api/posts/1', { tags: { endpoint: '/api/posts/{id}' } });
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
-    sleep(1);
-
-    // POST request for /api/posts
-    res = http.post('http://sample_app:8002/api/posts', 
-        JSON.stringify({ title: 'New Post', content: 'This is a new post.' }), 
-        { headers: { 'Content-Type': 'application/json' }, tags: { endpoint: '/api/posts' } }
-    );
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    // Sample POST request
+    const productPayload = JSON.stringify({ name: 'Sample Product', price: 19.99 });
+    res = http.post('http://sample_app:8002/api/v1/products', productPayload, { headers: { 'Content-Type': 'application/json' }, tags: { endpoint: '/api/v1/products' } });
+    check(res, { 'status is 201': (r) => r.status === 201 });
     sleep(1);
 }
