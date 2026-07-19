@@ -5,37 +5,38 @@ export default function () {
     let res;
 
     // Health Check
-    res = http.get('http://sample_app:8002/healthz', { tags: { endpoint: '/healthz' } });
+    res = http.get('http://sample_app:8002/healthz');
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
     // Create Cart
-    const cartPayload = { /* mock payload based on CartCreate schema */ };
-    res = http.post('http://sample_app:8002/api/v1/cart', JSON.stringify(cartPayload), { headers: { 'Content-Type': 'application/json' }, tags: { endpoint: '/api/v1/cart' } });
+    res = http.post('http://sample_app:8002/api/v1/cart', JSON.stringify({
+        product_id: 1,
+        user_id: 1
+    }), { headers: { 'Content-Type': 'application/json' } });
+    check(res, { 'status is 201': (r) => r.status === 201 });
+    sleep(1);
+    
+    // Get Cart
+    res = http.get('http://sample_app:8002/api/v1/cart/1');
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    // Get Cart
-    const cartId = 1; // example cart_id
-    res = http.get(`http://sample_app:8002/api/v1/cart/${cartId}`, { tags: { endpoint: `/api/v1/cart/${cartId}` } });
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    // Checkout
+    res = http.post('http://sample_app:8002/api/v1/checkout', JSON.stringify({
+        cart_id: 1,
+        user_id: 1
+    }), { headers: { 'Content-Type': 'application/json' } });
+    check(res, { 'status is 201': (r) => r.status === 201 });
     sleep(1);
 
     // List Orders
-    const userId = 1; // example user_id
-    res = http.get(`http://sample_app:8002/api/v1/orders/${userId}`, { tags: { endpoint: `/api/v1/orders/${userId}` } });
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
-    sleep(1);
-
-    // Get Product By Sku
-    const sku = 'example-sku'; // example sku
-    res = http.get(`http://sample_app:8002/api/v1/products/${sku}`, { tags: { endpoint: `/api/v1/products/${sku}` } });
+    res = http.get('http://sample_app:8002/api/v1/orders/1');
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
     
-    // Checkout
-    const checkoutPayload = { /* mock payload based on CheckoutRequest schema */ };
-    res = http.post('http://sample_app:8002/api/v1/checkout', JSON.stringify(checkoutPayload), { headers: { 'Content-Type': 'application/json' }, tags: { endpoint: '/api/v1/checkout' } });
+    // Get Product By Sku
+    res = http.get('http://sample_app:8002/api/v1/products/sku1');
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 }
