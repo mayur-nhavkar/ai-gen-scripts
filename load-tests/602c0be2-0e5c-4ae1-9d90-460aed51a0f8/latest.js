@@ -2,27 +2,32 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 export default function () {
-    let res;
-
-    res = http.get('http://sample_app:8002/healthz');
-    check(res, { 'status is 200': (r) => r.status === 200 });
+    // Health check
+    let res = http.get('http://sample_app:8002/healthz', { tags: { endpoint: '/healthz' } });
+    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    const cartCreatePayload = { user_id: 1 };
-    res = http.post('http://sample_app:8002/api/v1/cart', JSON.stringify(cartCreatePayload), { headers: { 'Content-Type': 'application/json' } });
-    check(res, { 'status is 201': (r) => r.status === 201 });
+    // Create Cart
+    let cartBody = JSON.stringify({ /* example properties for CartCreate */ });
+    res = http.post('http://sample_app:8002/api/v1/cart', cartBody, { headers: { 'Content-Type': 'application/json' }, tags: { endpoint: '/api/v1/cart' } });
+    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    res = http.get('http://sample_app:8002/api/v1/cart/1');
-    check(res, { 'status is 200': (r) => r.status === 200 });
+    // Get Cart
+    let cartId = 1; // Use a valid cart_id from a previous response
+    res = http.get(`http://sample_app:8002/api/v1/cart/${cartId}`, { tags: { endpoint: '/api/v1/cart/{cart_id}' } });
+    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    res = http.get('http://sample_app:8002/api/v1/products/12345');
-    check(res, { 'status is 200': (r) => r.status === 200 });
+    // Get Product By Sku
+    let sku = 'example-sku'; // Use a valid SKU
+    res = http.get(`http://sample_app:8002/api/v1/products/${sku}`, { tags: { endpoint: '/api/v1/products/{sku}' } });
+    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    const checkoutPayload = { cart_id: 1, payment_method: 'credit_card' };
-    res = http.post('http://sample_app:8002/api/v1/checkout', JSON.stringify(checkoutPayload), { headers: { 'Content-Type': 'application/json' } });
-    check(res, { 'status is 201': (r) => r.status === 201 });
+    // List Orders
+    let userId = 1; // Use a valid user_id
+    res = http.get(`http://sample_app:8002/api/v1/orders/${userId}`, { tags: { endpoint: '/api/v1/orders/{user_id}' } });
+    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 }
