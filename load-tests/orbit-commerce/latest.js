@@ -1,1 +1,1 @@
-import http from "k6/http"; export default function(){http.get("http://sample_app:8002/");}
+import http from "k6/http"; import { sleep } from "k6"; export default function(){http.get("http://sample_app:8002/"); sleep(1);}
