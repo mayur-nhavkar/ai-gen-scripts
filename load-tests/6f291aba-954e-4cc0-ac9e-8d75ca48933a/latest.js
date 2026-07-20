@@ -6,36 +6,32 @@ export default function () {
     
     // Health Check
     let res = http.get(`${baseUrl}/healthz`);
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    check(res, { 'status is 200': (r) => r.status === 200 });
     sleep(1);
-    
+
     // Create Cart
-    const createCartBody = JSON.stringify({});
-    res = http.post(`${baseUrl}/api/v1/cart`, createCartBody, { headers: { 'Content-Type': 'application/json' } });
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    const createCartPayload = {};
+    res = http.post(`${baseUrl}/api/v1/cart`, JSON.stringify(createCartPayload), { headers: { 'Content-Type': 'application/json' } });
+    check(res, { 'status is 201': (r) => r.status === 201 });
     sleep(1);
 
-    // Get Cart (dummy cart_id)
-    const cart_id = 1;
-    res = http.get(`${baseUrl}/api/v1/cart/${cart_id}`);
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    // Get Cart (replace {cart_id} with a plausible cart_id, e.g., 1)
+    res = http.get(`${baseUrl}/api/v1/cart/1`);
+    check(res, { 'status is 200': (r) => r.status === 200 });
     sleep(1);
 
-    // Get Product By Sku (dummy sku)
-    const sku = 'example-sku';
-    res = http.get(`${baseUrl}/api/v1/products/${sku}`);
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    // List Orders (replace {user_id} with a plausible user_id, e.g., 1)
+    res = http.get(`${baseUrl}/api/v1/orders/1`);
+    check(res, { 'status is 200': (r) => r.status === 200 });
     sleep(1);
 
-    // List Orders (dummy user_id)
-    const user_id = 1;
-    res = http.get(`${baseUrl}/api/v1/orders/${user_id}`);
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    // Get Product By Sku (replace {sku} with a plausible sku, e.g., '12345')
+    res = http.get(`${baseUrl}/api/v1/products/12345`);
+    check(res, { 'status is 200': (r) => r.status === 200 });
     sleep(1);
 
-    // Checkout
-    const checkoutBody = JSON.stringify({});
-    res = http.post(`${baseUrl}/api/v1/checkout`, checkoutBody, { headers: { 'Content-Type': 'application/json' } });
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    // Html Index
+    res = http.get(`${baseUrl}/?user_id=1`);
+    check(res, { 'status is 200': (r) => r.status === 200 });
     sleep(1);
 }
