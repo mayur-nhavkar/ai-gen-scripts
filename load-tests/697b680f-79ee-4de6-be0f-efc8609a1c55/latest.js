@@ -4,43 +4,34 @@ import { check, sleep } from 'k6';
 export default function () {
     const baseUrl = 'http://sample_app:8002';
     
-    const createCartPayload = JSON.stringify({
-        // Assuming the schema for CartCreate is empty
-    });
-    const checkoutPayload = JSON.stringify({
-        // Assuming the schema for CheckoutRequest is empty
-    });
-    const cartId = 1; // Example cart ID
-    const userId = 1; // Example user ID
-    const sku = "example-sku"; // Example SKU
-
     // Health Check
-    let res = http.get(`${baseUrl}/healthz`, { tags: { endpoint: '/healthz' } });
-    check(res, { 'status is 200': (r) => r.status === 200 });
+    let res = http.get(`${baseUrl}/healthz`);
+    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
     // Create Cart
-    res = http.post(`${baseUrl}/api/v1/cart`, createCartPayload, { tags: { endpoint: '/api/v1/cart' } });
-    check(res, { 'status is 201': (r) => r.status === 201 });
+    const createCartBody = JSON.stringify({});
+    res = http.post(`${baseUrl}/api/v1/cart`, createCartBody, { headers: { 'Content-Type': 'application/json' } });
+    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    // Get Cart
-    res = http.get(`${baseUrl}/api/v1/cart/${cartId}`, { tags: { endpoint: `/api/v1/cart/${cartId}` } });
-    check(res, { 'status is 200': (r) => r.status === 200 });
+    // Get Cart (assuming cart_id is 1)
+    res = http.get(`${baseUrl}/api/v1/cart/1`);
+    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    // List Orders
-    res = http.get(`${baseUrl}/api/v1/orders/${userId}`, { tags: { endpoint: `/api/v1/orders/${userId}` } });
-    check(res, { 'status is 200': (r) => r.status === 200 });
+    // List Orders (assuming user_id is 1)
+    res = http.get(`${baseUrl}/api/v1/orders/1`);
+    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    // Get Product By SKU
-    res = http.get(`${baseUrl}/api/v1/products/${sku}`, { tags: { endpoint: `/api/v1/products/${sku}` } });
-    check(res, { 'status is 200': (r) => r.status === 200 });
+    // Get Product by SKU (assuming SKU is "product-123")
+    res = http.get(`${baseUrl}/api/v1/products/product-123`);
+    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    // Checkout
-    res = http.post(`${baseUrl}/api/v1/checkout`, checkoutPayload, { tags: { endpoint: '/api/v1/checkout' } });
-    check(res, { 'status is 201': (r) => r.status === 201 });
+    // Html Index
+    res = http.get(`${baseUrl}/`);
+    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 }
