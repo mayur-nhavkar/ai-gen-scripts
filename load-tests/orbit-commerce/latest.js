@@ -3,7 +3,7 @@ import { check, sleep } from 'k6';
 
 export default function () {
   const base = 'http://sample_app:8002';
-  let res = http.post(`${base}/api/v1/cart`, "{\"user_id\": 1}", { headers: {}, tags: { endpoint: "/api/v1/cart" } });
+  let res = http.get(`${base}/api/v1/products/1`, { headers: {}, tags: { endpoint: "/api/v1/products/1" } });
   check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
   sleep(1);
 }
