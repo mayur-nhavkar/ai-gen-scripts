@@ -4,42 +4,23 @@ import { check, sleep } from 'k6';
 export default function () {
     const baseUrl = 'http://sample_app:8002';
     
-    // Health check
-    let res = http.get(`${baseUrl}/healthz`);
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    check(http.get(`${baseUrl}/healthz`), { 'status is 200': (r) => r.status === 200, tags: { endpoint: '/healthz' } });
     sleep(1);
     
-    // Create Cart
-    const cartPayload = { /* CartCreate example fields */ };
-    res = http.post(`${baseUrl}/api/v1/cart`, JSON.stringify(cartPayload), {
-        headers: { 'Content-Type': 'application/json' }
-    });
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    const cartCreatePayload = { /* Add plausible CartCreate payload data here */ };
+    check(http.post(`${baseUrl}/api/v1/cart`, JSON.stringify(cartCreatePayload), { headers: { 'Content-Type': 'application/json' }, tags: { endpoint: '/api/v1/cart' } }), { 'status is 201': (r) => r.status === 201 });
     sleep(1);
     
-    // Get Cart
-    const cartId = 1; // replace with a valid cart_id
-    res = http.get(`${baseUrl}/api/v1/cart/${cartId}`);
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    check(http.get(`${baseUrl}/api/v1/cart/1`), { 'status is 200': (r) => r.status === 200, tags: { endpoint: '/api/v1/cart/{cart_id}' } });
     sleep(1);
     
-    // Checkout
-    const checkoutPayload = { /* CheckoutRequest example fields */ };
-    res = http.post(`${baseUrl}/api/v1/checkout`, JSON.stringify(checkoutPayload), {
-        headers: { 'Content-Type': 'application/json' }
-    });
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    check(http.get(`${baseUrl}/api/v1/products/123`), { 'status is 200': (r) => r.status === 200, tags: { endpoint: '/api/v1/products/{sku}' } });
     sleep(1);
     
-    // List Orders
-    const userId = 1; // replace with a valid user_id
-    res = http.get(`${baseUrl}/api/v1/orders/${userId}`);
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    const checkoutPayload = { /* Add plausible CheckoutRequest payload data here */ };
+    check(http.post(`${baseUrl}/api/v1/checkout`, JSON.stringify(checkoutPayload), { headers: { 'Content-Type': 'application/json' }, tags: { endpoint: '/api/v1/checkout' } }), { 'status is 201': (r) => r.status === 201 });
     sleep(1);
     
-    // Get Product By Sku
-    const sku = 'example-sku'; // replace with a valid sku
-    res = http.get(`${baseUrl}/api/v1/products/${sku}`);
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    check(http.get(`${baseUrl}/api/v1/orders/1`), { 'status is 200': (r) => r.status === 200, tags: { endpoint: '/api/v1/orders/{user_id}' } });
     sleep(1);
 }
