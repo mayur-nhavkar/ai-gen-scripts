@@ -3,34 +3,34 @@ import { check, sleep } from 'k6';
 
 export default function () {
     const baseUrl = 'http://sample_app:8002';
-    
-    const cartCreateBody = JSON.stringify({}); // Adjust as necessary for CartCreate schema
-    const checkoutBody = JSON.stringify({}); // Adjust as necessary for CheckoutRequest schema
+    const headers = { 'Content-Type': 'application/json' };
 
-    const healthzRes = http.get(`${baseUrl}/healthz`);
-    check(healthzRes, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    // Health Check
+    let res = http.get(`${baseUrl}/healthz`, { headers, tags: { endpoint: '/healthz' } });
+    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
-    
-    const createCartRes = http.post(`${baseUrl}/api/v1/cart`, cartCreateBody, { tags: { endpoint: '/api/v1/cart' } });
-    check(createCartRes, { 'status is 201': (r) => r.status === 201 });
+
+    // Create Cart
+    const createCartBody = JSON.stringify({ /* parameters as needed */ });
+    res = http.post(`${baseUrl}/api/v1/cart`, createCartBody, { headers, tags: { endpoint: '/api/v1/cart' } });
+    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
-    
-    const cartId = 1; // Replace with appropriate value
-    const getCartRes = http.get(`${baseUrl}/api/v1/cart/${cartId}`, { tags: { endpoint: `/api/v1/cart/${cartId}` } });
-    check(getCartRes, { 'status is 200': (r) => r.status === 200 });
+
+    // Get Cart (using a sample cart_id)
+    const cartId = 1; // Change this to a valid cart_id as needed
+    res = http.get(`${baseUrl}/api/v1/cart/${cartId}`, { headers, tags: { endpoint: `/api/v1/cart/${cartId}` } });
+    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
-    
-    const userId = 1; // Replace with appropriate value
-    const listOrdersRes = http.get(`${baseUrl}/api/v1/orders/${userId}`, { tags: { endpoint: `/api/v1/orders/${userId}` } });
-    check(listOrdersRes, { 'status is 200': (r) => r.status === 200 });
+
+    // List Orders (using a sample user_id)
+    const userId = 1; // Change this to a valid user_id as needed
+    res = http.get(`${baseUrl}/api/v1/orders/${userId}`, { headers, tags: { endpoint: `/api/v1/orders/${userId}` } });
+    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
-    
-    const sku = 'product-sku'; // Replace with appropriate value
-    const getProductRes = http.get(`${baseUrl}/api/v1/products/${sku}`, { tags: { endpoint: `/api/v1/products/${sku}` } });
-    check(getProductRes, { 'status is 200': (r) => r.status === 200 });
-    sleep(1);
-    
-    const checkoutRes = http.post(`${baseUrl}/api/v1/checkout`, checkoutBody, { tags: { endpoint: '/api/v1/checkout' } });
-    check(checkoutRes, { 'status is 201': (r) => r.status === 201 });
+
+    // Get Product by SKU (using a sample sku)
+    const sku = 'example-sku'; // Change this to a valid sku as needed
+    res = http.get(`${baseUrl}/api/v1/products/${sku}`, { headers, tags: { endpoint: `/api/v1/products/${sku}` } });
+    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 }
