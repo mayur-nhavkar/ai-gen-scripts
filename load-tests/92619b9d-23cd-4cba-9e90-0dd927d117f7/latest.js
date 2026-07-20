@@ -2,37 +2,30 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 export default function () {
-    const baseUrl = 'http://sample_app:8002';
-    
-    // GET Health Check
-    let res = http.get(`${baseUrl}/healthz`);
-    check(res, { 'status is 2xx': r => r.status >= 200 && r.status < 300 });
-    sleep(1);
-    
-    // POST Create Cart
-    const createCartPayload = {};
-    res = http.post(`${baseUrl}/api/v1/cart`, JSON.stringify(createCartPayload), { headers: { 'Content-Type': 'application/json' } });
-    check(res, { 'status is 2xx': r => r.status >= 200 && r.status < 300 });
-    sleep(1);
-    
-    // GET Get Cart
-    res = http.get(`${baseUrl}/api/v1/cart/1`);
-    check(res, { 'status is 2xx': r => r.status >= 200 && r.status < 300 });
+    const params = { tags: { endpoint: '/healthz' } };
+    let res = http.get('http://sample_app:8002/healthz', params);
+    check(res, { 'status is 200': (r) => r.status === 200 });
     sleep(1);
 
-    // GET List Orders
-    res = http.get(`${baseUrl}/api/v1/orders/1`);
-    check(res, { 'status is 2xx': r => r.status >= 200 && r.status < 300 });
+    params.tags = { endpoint: '/api/v1/cart' };
+    const cartData = JSON.stringify({ product_id: 1, user_id: 1 });
+    res = http.post('http://sample_app:8002/api/v1/cart', cartData, { headers: { 'Content-Type': 'application/json' }, ...params });
+    check(res, { 'status is 201': (r) => r.status === 201 });
     sleep(1);
     
-    // GET Get Product By Sku
-    res = http.get(`${baseUrl}/api/v1/products/sample-sku`);
-    check(res, { 'status is 2xx': r => r.status >= 200 && r.status < 300 });
+    params.tags = { endpoint: '/api/v1/orders/1' };
+    res = http.get('http://sample_app:8002/api/v1/orders/1', params);
+    check(res, { 'status is 200': (r) => r.status === 200 });
     sleep(1);
     
-    // POST Checkout
-    const checkoutPayload = {};
-    res = http.post(`${baseUrl}/api/v1/checkout`, JSON.stringify(checkoutPayload), { headers: { 'Content-Type': 'application/json' } });
-    check(res, { 'status is 2xx': r => r.status >= 200 && r.status < 300 });
+    params.tags = { endpoint: '/api/v1/products/1' };
+    res = http.get('http://sample_app:8002/api/v1/products/1', params);
+    check(res, { 'status is 200': (r) => r.status === 200 });
+    sleep(1);
+
+    params.tags = { endpoint: '/api/v1/checkout' };
+    const checkoutData = JSON.stringify({ user_id: 1, cart_id: 1 });
+    res = http.post('http://sample_app:8002/api/v1/checkout', checkoutData, { headers: { 'Content-Type': 'application/json' }, ...params });
+    check(res, { 'status is 201': (r) => r.status === 201 });
     sleep(1);
 }
