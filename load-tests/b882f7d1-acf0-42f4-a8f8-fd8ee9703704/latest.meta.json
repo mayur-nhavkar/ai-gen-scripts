@@ -1,5 +1,5 @@
 {
-  "target_url": null,
-  "generated_at": "2026-07-20T08:36:52.419705+00:00",
-  "run_id": "b1a8b177-57e4-4cfd-a4c5-bc305c5b0ecd"
+  "target_url": "http://host.docker.internal:8000",
+  "generated_at": "2026-07-20T10:10:32.553313+00:00",
+  "run_id": "5bdc49cc-f199-4327-bb9a-ec36e68767c8"
 }
