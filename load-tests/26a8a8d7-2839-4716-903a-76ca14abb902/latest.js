@@ -6,36 +6,33 @@ export default function () {
     
     // Health Check
     let res = http.get(`${baseURL}/healthz`);
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    check(res, { 'status is 200': (r) => r.status === 200 });
     sleep(1);
     
     // Create Cart
     const createCartBody = JSON.stringify({});
     res = http.post(`${baseURL}/api/v1/cart`, createCartBody, { headers: { 'Content-Type': 'application/json' } });
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    check(res, { 'status is 201': (r) => r.status === 201 });
     sleep(1);
     
-    // Get Cart
-    const cartId = 1; // Example cart ID
-    res = http.get(`${baseURL}/api/v1/cart/${cartId}`);
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    // Get Cart (Assuming a cart_id of 1)
+    res = http.get(`${baseURL}/api/v1/cart/1`);
+    check(res, { 'status is 200': (r) => r.status === 200 });
     sleep(1);
     
-    // List Orders
-    const userId = 1; // Example user ID
-    res = http.get(`${baseURL}/api/v1/orders/${userId}`);
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    // List Orders (Assuming a user_id of 1)
+    res = http.get(`${baseURL}/api/v1/orders/1`);
+    check(res, { 'status is 200': (r) => r.status === 200 });
     sleep(1);
     
-    // Get Product By Sku
-    const sku = 'example-sku'; // Example SKU
-    res = http.get(`${baseURL}/api/v1/products/${sku}`);
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    // Get Product By Sku (Assuming a sku of 'sample-sku')
+    res = http.get(`${baseURL}/api/v1/products/sample-sku`);
+    check(res, { 'status is 200': (r) => r.status === 200 });
     sleep(1);
     
     // Checkout
     const checkoutBody = JSON.stringify({});
     res = http.post(`${baseURL}/api/v1/checkout`, checkoutBody, { headers: { 'Content-Type': 'application/json' } });
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    check(res, { 'status is 201': (r) => r.status === 201 });
     sleep(1);
 }
