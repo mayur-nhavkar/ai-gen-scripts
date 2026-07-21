@@ -3,37 +3,35 @@ import { check, sleep } from 'k6';
 
 export default function () {
     const baseUrl = 'http://sample_app:8002';
-    const params = { tags: { endpoint: '/healthz' } };
-
-    let res = http.get(`${baseUrl}/healthz`, params);
+    
+    // Health check
+    let res = http.get(`${baseUrl}/healthz`);
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    params.tags = { endpoint: '/api/v1/cart' };
-    const cartPayload = JSON.stringify({ /* Add plausible JSON for CartCreate schema */ });
-    res = http.post(`${baseUrl}/api/v1/cart`, cartPayload, params);
+    // Create Cart
+    const createCartBody = JSON.stringify({});
+    res = http.post(`${baseUrl}/api/v1/cart`, createCartBody, { headers: { 'Content-Type': 'application/json' } });
+    check(res, { 'status is 201': (r) => r.status === 201 });
+    sleep(1);
+
+    // Get Cart (assuming cart_id is 1)
+    res = http.get(`${baseUrl}/api/v1/cart/1`);
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    const cartId = 1; // Example cart ID
-    params.tags = { endpoint: `/api/v1/cart/${cartId}` };
-    res = http.get(`${baseUrl}/api/v1/cart/${cartId}`, params);
+    // Recent Orders
+    res = http.get(`${baseUrl}/api/v1/orders/recent?since=2023-01-01`);
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    params.tags = { endpoint: '/api/v1/orders/recent' };
-    const sinceDate = '2023-01-01'; // Example date
-    res = http.get(`${baseUrl}/api/v1/orders/recent?since=${sinceDate}`, params);
+    // Carts By User (assuming user_id is 1)
+    res = http.get(`${baseUrl}/api/v1/carts/by-user/1`);
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    params.tags = { endpoint: `/api/v1/orders/by-status/completed` };
-    res = http.get(`${baseUrl}/api/v1/orders/by-status/completed`, params);
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
-    sleep(1);
-
-    params.tags = { endpoint: '/api/v1/products/low-stock' };
-    res = http.get(`${baseUrl}/api/v1/products/low-stock`, params);
+    // Products Low Stock
+    res = http.get(`${baseUrl}/api/v1/products/low-stock?threshold=10`);
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 }
