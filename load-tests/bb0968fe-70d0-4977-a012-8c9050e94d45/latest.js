@@ -2,44 +2,40 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 export default function () {
-    const baseUrl = 'http://sample_app:8002';
+    const baseURL = 'http://sample_app:8002';
     
-    // Endpoint: Health Check
-    let res = http.get(`${baseUrl}/healthz`);
+    // Health Check
+    let res = http.get(`${baseURL}/healthz`);
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
-    
-    // Endpoint: Create Cart
-    const cartCreatePayload = {
-        // Example payload based on CartCreate schema
-        items: [],
-        user_id: 1
-    };
-    res = http.post(`${baseUrl}/api/v1/cart`, JSON.stringify(cartCreatePayload), { headers: { 'Content-Type': 'application/json' } });
+
+    // Create Cart
+    let createCartData = {};
+    res = http.post(`${baseURL}/api/v1/cart`, JSON.stringify(createCartData), { headers: { 'Content-Type': 'application/json' } });
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
-    
-    // Endpoint: Get Cart
-    const cartId = 1; // Example cart ID
-    res = http.get(`${baseUrl}/api/v1/cart/${cartId}`);
+
+    // Get Cart
+    let cart_id = 1; // Replace with a dynamic value if needed
+    res = http.get(`${baseURL}/api/v1/cart/${cart_id}`);
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
-    
-    // Endpoint: List Orders
-    const userId = 1; // Example user ID
-    res = http.get(`${baseUrl}/api/v1/orders/${userId}`);
+
+    // Checkout
+    let checkoutData = {};
+    res = http.post(`${baseURL}/api/v1/checkout`, JSON.stringify(checkoutData), { headers: { 'Content-Type': 'application/json' } });
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
-    
-    // Endpoint: Get Product
-    const sku = '12345'; // Example SKU
-    res = http.get(`${baseUrl}/api/v1/products/${sku}`);
+
+    // List Orders
+    let user_id = 1; // Replace with a dynamic value if needed
+    res = http.get(`${baseURL}/api/v1/orders/${user_id}`);
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
-    
-    // Endpoint: Search
-    const query = 'example'; // Example search query
-    res = http.get(`${baseUrl}/search?q=${query}`);
+
+    // Get Product By Sku
+    let sku = 'example-sku'; // Replace with a dynamic value if needed
+    res = http.get(`${baseURL}/api/v1/products/${sku}`);
     check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 }
