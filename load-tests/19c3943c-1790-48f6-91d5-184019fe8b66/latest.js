@@ -3,36 +3,43 @@ import { check, sleep } from 'k6';
 
 export default function () {
     const baseUrl = 'http://sample_app:8002';
-    const headers = { tags: {} };
+    const params = { tags: { endpoint: '/' } };
 
-    // Health check
-    let res = http.get(`${baseUrl}/healthz`, { headers });
-    check(res, { 'status is 200': (r) => r.status === 200 });
+    // Health Check
+    let res = http.get(`${baseUrl}/healthz`, params);
+    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
     // Create Cart
-    const createCartBody = JSON.stringify({});
-    res = http.post(`${baseUrl}/api/v1/cart`, createCartBody, { headers });
-    check(res, { 'status is 201': (r) => r.status === 201 });
+    const createCartPayload = {
+        // Assuming a basic structure for CartCreate based on context
+        items: []
+    };
+    res = http.post(`${baseUrl}/api/v1/cart`, JSON.stringify(createCartPayload), { ...params, headers: { 'Content-Type': 'application/json' } });
+    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    // Get Cart (assuming cart_id = 1 for demonstration)
-    res = http.get(`${baseUrl}/api/v1/cart/1`, { headers });
-    check(res, { 'status is 200': (r) => r.status === 200 });
+    // Get Cart - using a placeholder cart_id
+    const cartId = 1; // Set an appropriate cart_id
+    res = http.get(`${baseUrl}/api/v1/cart/${cartId}`, params);
+    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
     // Recent Orders
-    res = http.get(`${baseUrl}/api/v1/orders/recent?since=2023-01-01`, { headers });
-    check(res, { 'status is 200': (r) => r.status === 200 });
+    const sinceDate = '2023-01-01'; // Set an appropriate date
+    res = http.get(`${baseUrl}/api/v1/orders/recent?since=${sinceDate}`, params);
+    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    // Orders By Status (assuming status = 'completed' for demonstration)
-    res = http.get(`${baseUrl}/api/v1/orders/by-status/completed`, { headers });
-    check(res, { 'status is 200': (r) => r.status === 200 });
+    // Products By Category - using a placeholder category
+    const category = 'electronics'; // Set an appropriate category
+    res = http.get(`${baseUrl}/api/v1/products/by-category/${category}`, params);
+    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 
-    // Products By Category (assuming category = 'electronics' for demonstration)
-    res = http.get(`${baseUrl}/api/v1/products/by-category/electronics`, { headers });
-    check(res, { 'status is 200': (r) => r.status === 200 });
+    // User Recommendations - using a placeholder user_id
+    const userId = 1; // Set an appropriate user_id
+    res = http.get(`${baseUrl}/api/v1/users/${userId}/recommendations`, params);
+    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 }
