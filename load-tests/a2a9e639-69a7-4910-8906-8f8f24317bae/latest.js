@@ -2,40 +2,31 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 export default function () {
-    const baseURL = 'http://sample_app:8002';
+    const baseUrl = 'http://sample_app:8002';
     
-    // Health check
-    let res = http.get(`${baseURL}/healthz`);
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    const healthzRes = http.get(`${baseUrl}/healthz`);
+    check(healthzRes, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
     
-    // Create Cart
-    let createCartBody = JSON.stringify({});
-    res = http.post(`${baseURL}/api/v1/cart`, createCartBody, { headers: { 'Content-Type': 'application/json' }, tags: { endpoint: '/api/v1/cart' } });
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    const createCartPayload = JSON.stringify({ /* populate with CartCreate schema example */ });
+    const createCartRes = http.post(`${baseUrl}/api/v1/cart`, createCartPayload, { headers: { 'Content-Type': 'application/json' }, tags: { endpoint: '/api/v1/cart' } });
+    check(createCartRes, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
     
-    // Get Cart
-    let cartId = 1; // Assuming we have a cart ID for the example
-    res = http.get(`${baseURL}/api/v1/cart/${cartId}`, { tags: { endpoint: `/api/v1/cart/${cartId}` } });
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    const cartId = 1; // replace with a valid cart_id
+    const getCartRes = http.get(`${baseUrl}/api/v1/cart/${cartId}`, { tags: { endpoint: `/api/v1/cart/${cartId}` } });
+    check(getCartRes, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
     
-    // Recent Orders
-    let sinceDate = '2023-01-01'; // Example date
-    res = http.get(`${baseURL}/api/v1/orders/recent?since=${sinceDate}`, { tags: { endpoint: '/api/v1/orders/recent' } });
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    const recentOrdersRes = http.get(`${baseUrl}/api/v1/orders/recent?since=2023-01-01`, { tags: { endpoint: '/api/v1/orders/recent' } });
+    check(recentOrdersRes, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
     
-    // Products by Category
-    let category = 'electronics'; // Example category
-    res = http.get(`${baseURL}/api/v1/products/by-category/${category}`, { tags: { endpoint: `/api/v1/products/by-category/${category}` } });
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    const ordersByStatusRes = http.get(`${baseUrl}/api/v1/orders/by-status/pending`, { tags: { endpoint: '/api/v1/orders/by-status/pending' } });
+    check(ordersByStatusRes, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
     
-    // User Recommendations
-    let userId = 1; // Example user ID
-    res = http.get(`${baseURL}/api/v1/users/${userId}/recommendations`, { tags: { endpoint: `/api/v1/users/${userId}/recommendations` } });
-    check(res, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    const productsLowStockRes = http.get(`${baseUrl}/api/v1/products/low-stock`, { tags: { endpoint: '/api/v1/products/low-stock' } });
+    check(productsLowStockRes, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
     sleep(1);
 }
