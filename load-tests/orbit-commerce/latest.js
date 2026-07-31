@@ -3,25 +3,33 @@ import { check, sleep } from 'k6';
 
 export default function () {
     const baseUrl = 'http://sample_app:8002';
-    const params = { tags: { endpoint: '/api/v1/products/{sku}' } };
-
-    // Example SKU for testing
-    const sku = 'example-sku';
-
-    const res1 = http.get(`${baseUrl}/api/v1/products/${sku}`, params);
-    check(res1, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    
+    // Endpoint: Get Products by SKU
+    const sku = 'example-sku';  // Replace with a valid SKU for testing
+    const res1 = http.get(`${baseUrl}/api/v1/products/${sku}`, { tags: { endpoint: '/api/v1/products/{sku}' } });
+    check(res1, { 'status is 200': (r) => r.status === 200 });
     sleep(1);
-
-    const res2 = http.get(`${baseUrl}/healthz`, params);
-    check(res2, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    
+    // Endpoint: Get Cart
+    const cartId = 1;  // Replace with a valid cart ID for testing
+    const res2 = http.get(`${baseUrl}/api/v1/cart/${cartId}`, { tags: { endpoint: '/api/v1/cart/{cart_id}' } });
+    check(res2, { 'status is 200': (r) => r.status === 200 });
     sleep(1);
-
-    const category = 'electronics'; // Example category for next request
-    const res3 = http.get(`${baseUrl}/api/v1/products/by-category/${category}`, params);
-    check(res3, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    
+    // Endpoint: Recent Orders
+    const sinceDate = '2023-01-01';  // Replace with a valid date for testing
+    const res3 = http.get(`${baseUrl}/api/v1/orders/recent?since=${sinceDate}`, { tags: { endpoint: '/api/v1/orders/recent' } });
+    check(res3, { 'status is 200': (r) => r.status === 200 });
     sleep(1);
-
-    const res4 = http.get(`${baseUrl}/api/v1/products/low-stock?threshold=10`, params);
-    check(res4, { 'status is 2xx': (r) => r.status >= 200 && r.status < 300 });
+    
+    // Endpoint: Products Low Stock
+    const res4 = http.get(`${baseUrl}/api/v1/products/low-stock`, { tags: { endpoint: '/api/v1/products/low-stock' } });
+    check(res4, { 'status is 200': (r) => r.status === 200 });
+    sleep(1);
+    
+    // Endpoint: Orders by Status
+    const status = 'pending';  // Replace with a valid status for testing
+    const res5 = http.get(`${baseUrl}/api/v1/orders/by-status/${status}`, { tags: { endpoint: '/api/v1/orders/by-status/{status}' } });
+    check(res5, { 'status is 200': (r) => r.status === 200 });
     sleep(1);
 }
